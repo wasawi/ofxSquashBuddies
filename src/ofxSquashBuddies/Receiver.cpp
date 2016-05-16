@@ -188,6 +188,18 @@ namespace ofxSquashBuddies {
 		}
 	}
 
+	
+	//---------
+	bool Receiver::receive(string & label, string & msg) {
+		if (this->message.empty()) {
+			OFXSQUASHBUDDIES_WARNING << "Cannot receive. Message is empty";
+			return false;
+		}
+		else {
+			return this->message.getData(label, msg);
+		}
+	}
+	
 	//---------
 	vector<DroppedFrame> Receiver::getDroppedFrames() const {
 		return this->droppedFrames;

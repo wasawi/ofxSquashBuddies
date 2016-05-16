@@ -155,6 +155,71 @@ namespace ofxSquashBuddies {
 		this->headerAndBody.clear();
 	}
 
+	/////////////////////////////
+	// start Labels
+	/////////////////////////////
+	//----------
+	Message::Message(const string & label, const string & data) {
+		this->setData(label, data);
+	}
+	//----------
+	Message::Message(const string & label, const void * data, size_t size) {
+		this->setData(label, data, size);
+	}
+	//----------
+	void Message::setData(const string & label, const string & data) {
+		this->setData(label, &data, data.size());
+	}
+	//----------
+	void Message::setData(const string & label, const void * data, size_t size) {
+		std::string withLabel = label;
+		withLabel.resize(LABEL_SIZE);
+		withLabel.append((const char *)data, size);
+		this->setData(withLabel.data(), withLabel.size());
+	}
+	//----------
+	bool Message::getData(string & label, string & data) const {
+		if (this->hasHeader<Header::String>()) {
+			auto header = this->getHeader<Header::String>();
+			label.clear();
+			label.assign((char *) this->getBodyData(), LABEL_SIZE);
+			data.assign((char *) this->getBodyData() + LABEL_SIZE, this->getBodySize());
+			return true;
+		}
+		else {
+			OFXSQUASHBUDDIES_WARNING << "Message Header doesn't match String/Basic type";
+			return false;
+		}
+	}
+	/*
+	//----------
+	bool Message::getData(string & label, void * data, size_t & size) const {
+		if (this->hasHeader<Header::String>()) {
+			auto header = this->getHeader<Header::String>();
+			auto bodySize = this->getBodySize() - LABEL_SIZE;
+			if (bodySize > size) {
+				OFXSQUASHBUDDIES_ERROR << "Insufficient size in your buffer. Cannot get data";
+				return false;
+			}
+			else {
+				label.assign((char *) this->getBodyData(), LABEL_SIZE);
+//				data.assign(this->getBodyData(), LABEL_SIZE);
+				memcpy(data, this->getBodyData(), bodySize);
+				size = bodySize;
+				return true;
+			}
+		}
+		else {
+			OFXSQUASHBUDDIES_WARNING << "Message Header doesn't match String/Basic type";
+			return false;
+		}
+	}
+	*/
+
+	/////////////////////////////
+	// end Labels
+	/////////////////////////////
+
 	//----------
 	bool Message::getData(string & data) const {
 		if (this->hasHeader<Header::String>()) {

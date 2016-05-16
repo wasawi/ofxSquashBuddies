@@ -117,6 +117,11 @@ namespace ofxSquashBuddies {
 			}
 		}
 	}
+	
+	//----------
+	bool Sender::send(const string label, const void * data, size_t size) {
+		return this->send(move(Message(label, data, size)));
+	}
 
 	//----------
 	float Sender::getSendFramerate() const {

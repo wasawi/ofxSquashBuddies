@@ -24,15 +24,36 @@ void ofApp::update(){
 	this->receiver.update();
 	if (this->receiver.isFrameNew()) {
 		string data;
+
+		// receive unlabeled buffers
+		// this will swap buffers randomly because we don't know what image comes first
+		/*		
 		this->receiver.receive(data);
 		firstBuffer.set(data);
 		ofLoadImage(firstImage, firstBuffer);
 		this->firstImage.update();
 
 		this->receiver.receive(data);
-		firstBuffer.set(data);
-		ofLoadImage(secondImage, firstBuffer);
+		secondBuffer.set(data);
+		ofLoadImage(secondImage, secondBuffer);
 		this->secondImage.update();
+		*/	
+
+		// receive labeled buffers
+
+		string label;
+		this->receiver.receive(label, data);
+		if (ofIsStringInString(label, "first")) {
+			firstBuffer.set(data);
+			ofLoadImage(firstImage, firstBuffer);
+			this->firstImage.update();
+		}
+		else {
+			secondBuffer.set(data);
+			ofLoadImage(secondImage, secondBuffer);
+			this->secondImage.update();
+		}
+
 	}
 }
 

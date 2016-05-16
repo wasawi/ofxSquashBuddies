@@ -7,6 +7,8 @@
 #include <string>
 using namespace std;
 
+#define LABEL_SIZE 100
+
 namespace ofxSquashBuddies {
 	enum MessageType : uint16_t {
 		//--
@@ -223,6 +225,16 @@ namespace ofxSquashBuddies {
 		bool getData(ofShortPixels &);
 		bool getData(ofFloatPixels &);
 		bool getData(ofMesh &) const;
+
+		// labels
+		Message(const string & label, const string & data);
+		Message(const string & label, const void * data, size_t size);
+		void setData(const string & label, const string & data);
+		void setData(const string &, const void * data, size_t size);
+		bool getData(string & label, string & data) const;
+		bool getData(string & label, void * data, size_t & size) const;
+//		bool getLabel( string & label) const;
+
 
 		void pushData(const void * data, size_t size);
 

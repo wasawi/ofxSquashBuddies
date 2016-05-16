@@ -38,8 +38,13 @@ void ofApp::update(){
 	
 	int size = image.getWidth() * image.getHeight() * 4;
 	
-	sender.send(firstBuffer.getBinaryBuffer(), firstBuffer.size());
-	sender.send(secondBuffer.getBinaryBuffer(), secondBuffer.size());
+	// send without labels
+//	sender.send( firstBuffer.getBinaryBuffer(), firstBuffer.size());
+//	sender.send( secondBuffer.getBinaryBuffer(), secondBuffer.size());
+
+	// send with labels
+	sender.send("first", firstBuffer.getBinaryBuffer(), firstBuffer.size());
+	sender.send("second", secondBuffer.getBinaryBuffer(), secondBuffer.size());
 }
 
 //--------------------------------------------------------------
