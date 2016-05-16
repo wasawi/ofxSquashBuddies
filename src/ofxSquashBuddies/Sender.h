@@ -27,7 +27,8 @@ namespace ofxSquashBuddies {
 		bool send(const Message &);
 		bool send(Message &&);
 		
-		bool send(const string, const void *, size_t);
+		//labels
+		bool send(const string &, const void *, size_t);
 
 		template<typename PodType, typename std::enable_if<std::is_pod<PodType>::value, void>::type>
 		void send(PodType & data) {

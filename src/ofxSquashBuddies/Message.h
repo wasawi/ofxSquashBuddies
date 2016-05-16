@@ -7,7 +7,9 @@
 #include <string>
 using namespace std;
 
-#define LABEL_SIZE 100
+#define MAX_LABEL_SIZE 100
+#define FRONT_LABEL_DELIMITER "[/F]"
+#define BACK_LABEL_DELIMITER "[/B]"
 
 namespace ofxSquashBuddies {
 	enum MessageType : uint16_t {
@@ -44,9 +46,11 @@ namespace ofxSquashBuddies {
 		//--
 		//
 		First_User_Slot = 32,
-		Example_User_Slot = First_User_Slot + 1
+		Example_User_Slot = First_User_Slot + 1,
 		//
 		//--
+
+		StringWithLabel = 46
 	};
 
 	namespace Header {
@@ -198,6 +202,15 @@ namespace ofxSquashBuddies {
 				}
 			}
 		};
+
+		struct StringWithLabel {
+			struct {
+				uint16_t	headerSize = MAX_LABEL_SIZE + 6;
+				MessageType messageType = MessageType::StringWithLabel;
+				string		label = "";
+			};
+		};
+
 	}
 
 	class Message {
@@ -233,7 +246,7 @@ namespace ofxSquashBuddies {
 		void setData(const string &, const void * data, size_t size);
 		bool getData(string & label, string & data) const;
 		bool getData(string & label, void * data, size_t & size) const;
-//		bool getLabel( string & label) const;
+		bool getLabel( string & label) const;
 
 
 		void pushData(const void * data, size_t size);

@@ -43,7 +43,7 @@ void ofApp::update(){
 
 		string label;
 		this->receiver.receive(label, data);
-		if (ofIsStringInString(label, "first")) {
+		if (label == "first") {
 			firstBuffer.set(data);
 			ofLoadImage(firstImage, firstBuffer);
 			this->firstImage.update();

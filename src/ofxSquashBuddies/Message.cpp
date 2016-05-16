@@ -171,42 +171,63 @@ namespace ofxSquashBuddies {
 		this->setData(label, &data, data.size());
 	}
 	//----------
-	void Message::setData(const string & label, const void * data, size_t size) {
-		std::string withLabel = label;
-		withLabel.resize(LABEL_SIZE);
-		withLabel.append((const char *)data, size);
-		this->setData(withLabel.data(), withLabel.size());
+	void Message::setData(const string & label, const void * data, size_t dataSize) {
+		if (label.size() > MAX_LABEL_SIZE) {
+			OFXSQUASHBUDDIES_ERROR << "current label is bigger than MAX_LABEL_SIZE";
+			return;
+		}
+		const auto headerSize = sizeof(Header::StringWithLabel) + MAX_LABEL_SIZE;
+		const auto bodySize = dataSize; // inner payload
+		this->headerAndBody.resize(headerSize + bodySize);
+
+		auto & header = this->getHeader<Header::StringWithLabel>(true);
+//		header.label = FRONT_LABEL_DELIMITER + label + BACK_LABEL_DELIMITER;
+		header.label = label + BACK_LABEL_DELIMITER;
+
+		auto body = this->getBodyData();
+		memcpy(body, data, dataSize);
 	}
 	//----------
 	bool Message::getData(string & label, string & data) const {
-		if (this->hasHeader<Header::String>()) {
-			auto header = this->getHeader<Header::String>();
-			label.clear();
-			label.assign((char *) this->getBodyData(), LABEL_SIZE);
-			data.assign((char *) this->getBodyData() + LABEL_SIZE, this->getBodySize());
-			return true;
+		if (this->hasHeader<Header::StringWithLabel>()) {
+			data.assign((char *) this->getBodyData(), this->getBodySize());
+			return this->getLabel(label);
 		}
 		else {
-			OFXSQUASHBUDDIES_WARNING << "Message Header doesn't match String/Basic type";
+			OFXSQUASHBUDDIES_WARNING << "Message Header doesn't match StringWithLabel type";
 			return false;
 		}
 	}
-	/*
+	bool Message::getLabel(string & label) const
+	{
+		const auto & header = this->getHeader<Header::StringWithLabel>();
+		
+		if (header.label == "" || header.label.size() > MAX_LABEL_SIZE) {
+			OFXSQUASHBUDDIES_WARNING << "error while trying to find label";
+//			cout << "label raw =" << header.label << endl;
+			cout << "label size =" << header.label.size() << endl;
+			return false;
+		}
+		else {
+//			OFXSQUASHBUDDIES_NOTICE << header.label;
+			label = ofSplitString(header.label, BACK_LABEL_DELIMITER)[0];
+			true;
+		}
+	}
+	
 	//----------
 	bool Message::getData(string & label, void * data, size_t & size) const {
-		if (this->hasHeader<Header::String>()) {
-			auto header = this->getHeader<Header::String>();
-			auto bodySize = this->getBodySize() - LABEL_SIZE;
+		if (this->hasHeader<Header::StringWithLabel>()) {
+			const auto & header = this->getHeader<Header::StringWithLabel>();
+			auto bodySize = this->getBodySize();
 			if (bodySize > size) {
 				OFXSQUASHBUDDIES_ERROR << "Insufficient size in your buffer. Cannot get data";
 				return false;
 			}
 			else {
-				label.assign((char *) this->getBodyData(), LABEL_SIZE);
-//				data.assign(this->getBodyData(), LABEL_SIZE);
 				memcpy(data, this->getBodyData(), bodySize);
 				size = bodySize;
-				return true;
+				return this->getLabel(label);
 			}
 		}
 		else {
@@ -214,7 +235,7 @@ namespace ofxSquashBuddies {
 			return false;
 		}
 	}
-	*/
+	
 
 	/////////////////////////////
 	// end Labels
