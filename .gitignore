@@ -38,3 +38,8 @@ ipch/
 
 # VVVV backup files
 *~.xml
+
+
+#visual studio
+*.VC.opendb
+*.VC.db
