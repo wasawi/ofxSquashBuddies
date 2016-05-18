@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include "Packet.h"
 #include "Message.h"
+#include "TaggedMessage.h"
 
 #include "ofxSquash/Codec.h"
 #include "ofxSquash/Stream.h"
